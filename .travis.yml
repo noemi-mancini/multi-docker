@@ -1,0 +1,22 @@
+sudo: required
+services:
+  -docker
+
+before_install:
+  - docker build -t noemi/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run noemi/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t noemimancini/multi-client ./client
+  - docker build -t noemimancini/multi-nginx ./nginx
+  - docker build -t noemimancini/multi-server ./server
+  - docker build -t noemimancini/multi-worker ./worker
+  # Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push them to docker hub
+  - docker push noemimancini/multi-client
+  - docker push noemimancini/multi-nginx
+  - docker push noemimancini/multi-server
+  - docker push noemimancini/multi-worker
