@@ -6,7 +6,7 @@ before_install:
   - docker build -t noemi/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run noemi/react-test npm test -- --coverage
+  - docker run -e CI=TRUE noemi/react-test npm test
 
 after_success:
   - docker build -t noemimancini/multi-client ./client
